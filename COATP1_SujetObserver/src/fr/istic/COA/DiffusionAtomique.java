@@ -17,45 +17,35 @@ public class DiffusionAtomique extends Diffusion{
 	public void executeDiffusion() {
 		
 		ExecutorService exec = Executors.newFixedThreadPool(nombreObservateurs);
-		ArrayList<Future<String>> lesRetours = new ArrayList<>();
-		ArrayList<Callable<String>> lesExecutions = new ArrayList<>();
-
-		int cmptCallable = 0;
-		cmptGetVal = 0;
+		ArrayList<Future<Void>> lesRetours = new ArrayList<>();
+		ArrayList<Callable<Void>> lesExecutions = new ArrayList<>();
 		
-		//for(final ObservateurInterf obser : capteur.getObservateurs()){
-		for(int i = 0; i < capteur.getObservateurs().size(); i++){
-			final int index = i;
-			Callable<String> toto = new Callable<String>() {
+		for(final ObservateurInterf obser : capteur.getObservateurs()){
+			
+			Callable<Void> tache = new Callable<Void>() {
 				@Override
-				public String call() throws Exception {
-					
-					capteur.getObservateurs().get(index).actualise(DiffusionAtomique.this);
-					
-					return "Num callable = " + index;
+				public Void call() throws Exception {
+					obser.actualise(DiffusionAtomique.this);
+					return null;
 				}
 			};
 			
-			lesExecutions.add(toto);
-			lesRetours.add(exec.submit(toto));
+			lesExecutions.add(tache);
+			lesRetours.add(exec.submit(tache));
 		}
 		
 		
-		for(Future<String> future : lesRetours){
-		    
+		for(Future<Void> future : lesRetours){
 			try {
-				String result = future.get();
-				System.out.println("RETOUR GET FUTURE : " + result);
+				future.get();
+				System.out.println("RETOUR GET FUTURE");
 				System.out.flush();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (ExecutionException e) {
 				e.printStackTrace();
 			}
-			
 		}
-		
-		//System.out.println("Fin des futures.get !!!");
 	}
 
 	@Override

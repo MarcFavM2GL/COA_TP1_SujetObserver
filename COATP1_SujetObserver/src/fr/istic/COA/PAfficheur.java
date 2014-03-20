@@ -64,12 +64,6 @@ public class PAfficheur extends JFrame {
 
 		panneauPrincipal.add(titreLbl);
 		
-		
-		modeLbl = new JLabel();
-		modeLbl.setText("mode : ");
-
-		panneauPrincipal.add(modeLbl);
-		
 		affValeurLbl = new JLabel();
 		affValeurLbl.setText("Valeur = ");
 

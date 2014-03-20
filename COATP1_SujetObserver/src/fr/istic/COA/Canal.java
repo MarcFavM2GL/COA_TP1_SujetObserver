@@ -2,9 +2,8 @@ package fr.istic.COA;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -35,42 +34,32 @@ public class Canal implements ObservateurInterf, CapteurInterf{
 	public void actualise(Diffusion strategie) {
 		
 		this.strategieDiffusion = strategie;
+		
 		System.out.println("'canal update AV tempo' CANAL NUM " + id);
 		System.out.flush();
+		
+		ScheduledExecutorService pilExec = Executors.newScheduledThreadPool(10);
+
+		ScheduledFuture execFuture = pilExec.schedule(new Callable<Object>() {
+		        public Object call() throws Exception {
+		        			        	
+		        	monAffichage.actualiseAff(Canal.this);
+
+		            return null;
+		        }
+		    }, id*600, TimeUnit.MILLISECONDS);
+		
+		
 		try {
-			Thread.currentThread();
-			Thread.sleep(500 * id);
+			execFuture.get();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
 			e.printStackTrace();
 		}
+		
 		System.out.println("'canal update AP tempo' CANAL NUM " + id);
 		System.out.flush();
-		
-//		ExecutorService es = Executors.newSingleThreadExecutor();
-//		
-//		es.execute(new Runnable() {
-//			
-//			@Override
-//			public void run() {
-//				monAffichage.actualiseAff(Canal.this);
-//			}
-//		});
-//		
-//		es.shutdown();
-		
-		monAffichage.actualiseAff(Canal.this);
-		
-		//ScheduledExecutorService pilExec = Executors.newScheduledThreadPool(10);
-
-//		ScheduledFuture execFuture = pilExec.schedule(new Callable<Object>() {
-//		        public Object call() throws Exception {
-//		        			        	
-//		        	monAffichage.actualiseAff(Canal.this);
-//
-//		            return null;
-//		        }
-//		    }, id*600, TimeUnit.MILLISECONDS);
 		
 	}
 
